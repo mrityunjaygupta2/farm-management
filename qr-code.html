@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scan Animal QR Code | FarmGuard</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Custom Animations -->
+  <style>
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in-up {
+      animation: fadeInUp 0.6s ease-out both;
+    }
+
+    @keyframes bounceIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      60% { opacity: 1; transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .bounce-in {
+      animation: bounceIn 0.5s ease;
+    }
+  </style>
+</head>
+<body class="bg-green-50 min-h-screen font-sans flex flex-col items-center justify-start">
+
+  <!-- Header -->
+  <header class="w-full bg-green-800 text-white py-6 text-center shadow-md fade-in-up">
+    <h1 class="text-3xl font-bold">Scan Animal QR Code</h1>
+    <p class="text-sm mt-1">Point your camera at a QR code to identify an animal</p>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex flex-col items-center justify-center flex-1 px-4 mt-10">
+
+    <!-- Instruction -->
+    <div class="mb-6 text-center max-w-md fade-in-up">
+      <p class="text-gray-700 text-lg">Align the animal's QR code within the frame below.</p>
+    </div>
+
+    <!-- QR Code Scanner Box -->
+    <div id="reader" class="shadow-lg rounded-md overflow-hidden fade-in-up" style="width: 300px;"></div>
+
+    <!-- Result -->
+    <div id="scanResult" class="mt-6 text-green-700 font-semibold text-lg fade-in-up"></div>
+
+    <!-- Rescan Button -->
+    <button id="restartBtn" class="mt-8 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition hidden fade-in-up">
+      Scan Another
+    </button>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full bg-green-800 text-white text-center py-4 mt-10">
+    &copy; 2025 FarmGuard - All Rights Reserved
+  </footer>
+
+  <!-- QR Code Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+  <!-- QR Scanner Script -->
+  <script>
+    const scanResult = document.getElementById("scanResult");
+    const restartBtn = document.getElementById("restartBtn");
+    let html5QrCode;
+
+    function startScanner() {
+      html5QrCode = new Html5Qrcode("reader");
+
+      html5QrCode.start(
+        { facingMode: "environment" }, // Rear camera
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 }
+        },
+        (decodedText) => {
+          scanResult.innerText = "✅ Animal ID Scanned: " + decodedText;
+          scanResult.classList.add("bounce-in");
+
+          html5QrCode.stop().then(() => {
+            document.getElementById("reader").innerHTML = "";
+            restartBtn.classList.remove("hidden");
+          });
+        },
+        (errorMessage) => {
+          // Optional: log errors
+          // console.warn("Scanning error:", errorMessage);
+        }
+      ).catch((err) => {
+        console.error("Camera start failed:", err);
+        scanResult.innerText = "⚠️ Unable to access camera.";
+        scanResult.classList.add("text-red-600");
+      });
+    }
+
+    restartBtn.addEventListener("click", () => {
+      scanResult.innerText = "";
+      restartBtn.classList.add("hidden");
+      startScanner();
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      startScanner();
+    });
+  </script>
+</body>
+</html>

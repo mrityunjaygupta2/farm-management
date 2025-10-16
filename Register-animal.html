@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FarmGuard Biosecurity Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f0fdf4; }
+    .hidden { display: none; }
+    .nav-item { cursor: pointer; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-green-800 text-white p-6 text-center">
+    <h1 class="text-3xl font-bold">FarmGuard Biosecurity Portal</h1>
+    <p class="mt-2">Your digital companion for implementing biosecurity measures in pig and poultry farms.</p>
+  </header>
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow flex justify-center space-x-6 py-4">
+    <span class="nav-item" data-target="aiAssistant">AI Assistant</span>
+    <span class="nav-item" data-target="dashboard">Dashboard</span>
+    <span class="nav-item" data-target="protocols">Protocols</span>
+    <span class="nav-item" data-target="monitoring">Monitoring</span>
+    <span class="nav-item" data-target="resources">Resources</span>
+    <span class="nav-item" data-target="alerts">Alerts</span>
+    <!-- New Tabs -->
+    <span class="nav-item text-green-700 font-bold" data-target="animals">Animals</span>
+    <span class="nav-item text-green-700 font-bold" data-target="register">Register Animal</span>
+  </nav>
+
+  <!-- Main Sections -->
+  <main class="flex-1 p-6">
+
+    <!-- AI Assistant -->
+    <section id="aiAssistant">
+      <h2 class="text-2xl font-bold mb-4">AI Assistant</h2>
+      <p>Here you can chat with your AI Assistant for farm management guidance.</p>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="dashboard" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Dashboard Overview</h2>
+      <p>Farm statistics and live updates will appear here.</p>
+    </section>
+
+    <!-- Protocols -->
+    <section id="protocols" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Protocols</h2>
+      <p>Biosecurity protocols and farm safety measures listed here.</p>
+    </section>
+
+    <!-- Monitoring -->
+    <section id="monitoring" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Monitoring</h2>
+      <p>Real-time monitoring of farm conditions and health alerts.</p>
+    </section>
+
+    <!-- Resources -->
+    <section id="resources" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Resources</h2>
+      <p>Useful articles, documents, and external resources for biosecurity.</p>
+    </section>
+
+    <!-- Alerts -->
+    <section id="alerts" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Alerts</h2>
+      <p>Critical alerts and notifications will appear here.</p>
+    </section>
+
+    <!-- ===================== ANIMALS SECTION ===================== -->
+    <section id="animals" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Scan Barcode of Animal</h2>
+      <p class="mb-4 text-gray-600">Place the barcode in front of your camera to identify the animal.</p>
+      <div id="reader" style="width:300px"></div>
+      <div id="scanResult" class="mt-4 text-lg font-semibold text-green-700"></div>
+    </section>
+
+    <!-- ===================== REGISTER ANIMAL SECTION ===================== -->
+    <section id="register" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Register New Animal</h2>
+      <form id="animalForm" class="space-y-4 max-w-md">
+        <input type="text" id="animalName" placeholder="Animal Name" class="w-full p-2 border rounded" required>
+        <input type="text" id="animalType" placeholder="Animal Type (Pig/Poultry)" class="w-full p-2 border rounded" required>
+        <input type="number" id="animalAge" placeholder="Age (in months)" class="w-full p-2 border rounded" required>
+        <input type="text" id="animalId" placeholder="Unique Animal ID" class="w-full p-2 border rounded" required>
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Register</button>
+      </form>
+
+      <h3 class="text-xl font-bold mt-6 mb-2">Registered Animals</h3>
+      <ul id="registeredAnimals" class="list-disc pl-6 text-gray-700"></ul>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-green-800 text-white text-center py-4">
+    &copy; 2025 FarmGuard - All Rights Reserved
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script>
+    // Navbar tab switching
+    const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('main section');
+    let html5QrCode;
+
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        sections.forEach(sec => sec.classList.add('hidden'));
+        document.getElementById(item.dataset.target).classList.remove('hidden');
+
+        // Scanner control
+        if (item.dataset.target === 'animals') {
+          startScanner();
+        } else {
+          stopScanner();
+        }
+      });
+    });
+
+    // Register Animal form
+    document.getElementById('animalForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      let name = document.getElementById('animalName').value;
+      let type = document.getElementById('animalType').value;
+      let age = document.getElementById('animalAge').value;
+      let id = document.getElementById('animalId').value;
+
+      let li = document.createElement('li');
+      li.textContent = `${name} (${type}), Age: ${age} months, ID: ${id}`;
+      document.getElementById('registeredAnimals').appendChild(li);
+
+      this.reset();
+      alert("Animal Registered Successfully!");
+    });
+
+    // Barcode Scanner
+    function startScanner() {
+      html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (qrMessage) => {
+          document.getElementById('scanResult').innerText = "Scanned Animal Code: " + qrMessage;
+          html5QrCode.stop();
+        }
+      ).catch(err => console.log("Scanner start error:", err));
+    }
+
+    function stopScanner() {
+      if (html5QrCode) {
+        html5QrCode.stop().catch(err => console.log("Stop error:", err));
+        document.getElementById('reader').innerHTML = "";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Farm Management Portal - Biosecurity for Pig & Poultry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+            overflow-x: hidden;
+        }
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.8), rgba(139, 195, 74, 0.8)), url('https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ec6086d2-8507-492e-a4f6-f0ad0f371c16.png') no-repeat center center;
+            background-size: cover;
+            background-attachment: fixed;
+            color: white;
+            position: relative;
+        }
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+        .hero-bg > * {
+            position: relative;
+            z-index: 2;
+        }
+        .nav-link {
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+        }
+        .nav-link:hover {
+            color: #4caf50;
+            transform: translateY(-3px) scale(1.05);
+            text-shadow: 0 0 15px rgba(76, 175, 80, 0.8);
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .section {
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-in-out forwards;
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .biosecurity-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        .biosecurity-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        .biosecurity-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #4caf50, #8bc34a, #4caf50);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .biosecurity-card:hover::before {
+            opacity: 1;
+        }
+        .checklist-item {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .checklist-item:hover {
+            background-color: #f0f8ff;
+            transform: translateX(10px);
+        }
+        .checklist-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent);
+            transition: width 0.5s ease;
+        }
+        .checklist-item:hover::after {
+            width: 100%;
+        }
+        .alert-ribbon {
+            background: linear-gradient(135deg, #ff6f61, #ff4757);
+            color: white;
+            animation: slideIn 0.5s ease, pulse 2s infinite;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .alert-ribbon:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(255, 113, 97, 0.3);
+        }
+        .alert-ribbon::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: width 0.6s ease;
+        }
+        .alert-ribbon:hover::after {
+            width: 100%;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-100%) scale(0.8); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 113, 97, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(255, 113, 97, 0); }
+        }
+        .stat-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-circle:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        .stat-circle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        .stat-circle:hover::before {
+            transform: translateX(100%);
+        }
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .float-item {
+            position: absolute;
+            animation: floatAnimation 6s ease-in-out infinite;
+            opacity: 0.1;
+        }
+        @keyframes floatAnimation {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        .cursor-glow {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(76, 175, 80, 0.5), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: width 0.2s, height 0.2s, background 0.2s;
+        }
+        .button-3d {
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .button-3d:hover {
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+            transform: translateY(-3px);
+        }
+        .button-3d::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .button-3d:active::after {
+            width: 300px;
+            height: 300px;
+        }
+        .motion-bg {
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(76, 175, 80, 0.05) 10px,
+                rgba(76, 175, 80, 0.05) 20px
+            );
+            animation: backgroundScroll 20s linear infinite;
+        }
+        @keyframes backgroundScroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-40px); }
+        }
+        .particle {
+            position: absolute;
+            background: rgba(76, 175, 80, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .hero-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(139, 195, 74, 0.6);
+            border-radius: 50%;
+            animation: particleFloat 8s ease-in-out infinite;
+        }
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(180deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen relative motion-bg">
+    <!-- Cursor Glow Effect -->
+    <div id="cursor-glow" class="cursor-glow"></div>
+
+    <!-- Floating Background Elements -->
+    <div class="floating-elements">
+        <div class="float-item" style="top: 10%; left: 10%;">🌾</div>
+        <div class="float-item" style="top: 20%; right: 15%;">🐷</div>
+        <div class="float-item" style="bottom: 30%; left: 20%;">🦆</div>
+        <div class="float-item" style="bottom: 20%; right: 10%;">🌱</div>
+        <div class="float-item" style="top: 60%; left: 30%;">🐔</div>
+        <div class="float-item" style="bottom: 60%; right: 30%;">🐮</div>
+    </div>
+
+    <!-- Hero Section with Particles -->
+    <section class="hero-bg py-32 text-center relative overflow-hidden">
+        <div class="container mx-auto px-4">
+            <div class="hero-particle" style="top: 20%; left: 10%;"></div>
+            <div class="hero-particle" style="top: 40%; left: 80%; animation-delay: 2s;"></div>
+            <div class="hero-particle" style="bottom: 30%; left: 60%; animation-delay: 4s;"></div>
+            <div class="hero-particle" style="bottom: 20%; right: 20%; animation-delay: 6s;"></div>
+            <h1 class="text-6xl font-bold mb-6 animate-pulse">FarmGuard Biosecurity Portal</h1>
+            <p class="text-2xl mb-8 max-w-4xl mx-auto leading-relaxed">Your digital companion for implementing biosecurity measures in pig and poultry farms. Ensure safety, monitor health, and boost productivity with cutting-edge technology.</p>
+            <button class="bg-white text-green-700 px-10 py-4 rounded-full font-semibold text-lg button-3d transition-all transform hover:scale-110">Explore Dashboard</button>
+        </div>
+    </section>
+
+    <!-- Navigation -->
+    <header class="bg-white shadow-xl sticky top-0 z-50 backdrop-filter backdrop-blur-sm bg-opacity-95">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center transform hover:scale-105 transition-transform">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/bf45dad8-4f0d-4abd-b9b9-a305acec01a8.png" alt="Farmland logo with green shield and farm animals" class="w-12 h-12 mr-3 rounded-full shadow-lg transition-transform hover:rotate-12">
+                <span class="text-3xl font-bold text-gray-800 bg-gradient-to-r from-green-600 to-green-400 bg-clip-text text-transparent">FarmGuard</span>
+            </div>
+            
+            <nav class="hidden md:flex space-x-8">
+                <a href="./regis-animal.html" class="nav-link text-gray-700 font-semibold">Animal Registration</a>
+                 <a href="./qr-code.html" class="nav-link text-gray-700 font-semibold">Scan Animals</a>
+                
+                <a href="#dashboard" class="nav-link text-gray-700 font-semibold">Dashboard</a>
+                <a href="#protocols" class="nav-link text-gray-700 font-semibold">Protocols</a>
+                <a href="#monitoring" class="nav-link text-gray-700 font-semibold">Monitoring</a>
+                <a href="#resources" class="nav-link text-gray-700 font-semibold">Resources</a>
+                <a href="#alerts" class="nav-link text-gray-700 font-semibold">Alerts</a>
+                <a href="#dashboard" id="assistant">AI Assistant</a>
+                
+            </nav>
+            <button class="md:hidden bg-green-500 text-white px-4 py-2 rounded-lg transition-all hover:bg-green-600 hover:scale-105">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 relative">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section bg-white rounded-3xl p-10 mb-10 biosecurity-card">
+            <h2 class="text-4xl font-bold text-gray-800 mb-8 flex items-center justify-center">
+                <i class="fas fa-tachometer-alt text-green-600 mr-4 animate-spin-slow"></i>Dashboard Overview
+                <span class="ml-2 text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full">Live Updates</span>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-8">
+                <div class="text-center group">
+                    <div class="stat-circle bg-blue-200 text-blue-800 mx-auto mb-4 group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-blue-400 transition-all">
+                        <i class="fas fa-pig transition-transform group-hover:scale-125"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-2 text-blue-700">Pig Farms</h3>
+                    <p class="text-5xl font-bold text-blue-700" id="pig-count">12</p>
+                    <p class="text-gray-600 group-hover:text-blue-600 transition-colors">Active farms monitored</p>
+                </div>
+                <div class="text-center group">
+                    <div class="stat-circle bg-yellow-200 text-yellow-800 mx-auto mb-4 group-hover:bg-gradient-to-r group-hover:from-yellow-300 group-hover:to-yellow-400 transition-all">
+                        <i class="fas fa-dove transition-transform group-hover:scale-125"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-2 text-yellow-700">Poultry Farms</h3>
+                    <p class="text-5xl font-bold text-yellow-700" id="poultry-count">15</p>
+                    <p class="text-gray-600 group-hover:text-yellow-600 transition-colors">Birds under care</p>
+                </div>
+                <div class="text-center group">
+                    <div class="stat-circle bg-green-200 text-green-800 mx-auto mb-4 group-hover:bg-gradient-to-r group-hover:from-green-300 group-hover:to-green-400 transition-all">
+                        <i class="fas fa-shield-alt transition-transform group-hover:scale-125"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-2 text-green-700">Biosecurity Score</h3>
+                    <p class="text-5xl font-bold text-green-700" id="biosecurity-score">85%</p>
+                    <p class="text-gray-600 group-hover:text-green-600 transition-colors">Current compliance level</p>
+                </div>
+            </div>
+            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/837e7fef-37e2-4b77-952f-24f902e112c3.png" alt="Modern farm landscape with clean barns, fenced areas, and automated monitoring equipment" class="w-full rounded-2xl shadow-2xl transform hover:scale-105 transition-transform">
+            <p class="mt-6 text-center text-gray-600 text-lg">Visual overview of your farm's current status and biosecurity measures in place.</p>
+        </section>
+
+        <!-- Biosecurity Protocols Section -->
+        <section id="protocols" class="section bg-white rounded-3xl p-10 mb-10 biosecurity-card">
+            <h2 class="text-4xl font-bold text-gray-800 mb-8 flex items-center justify-center">
+                <i class="fas fa-book text-indigo-600 mr-4 animate-bounce"></i>Biosecurity Protocols
+            </h2>
+            <p class="text-gray-600 mb-8 text-center text-lg max-w-3xl mx-auto">Follow these checklists to maintain optimal biosecurity standards across your farms. Interactive protocols that adapt in real-time.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-2xl checklist hover:shadow-xl transition-shadow">
+                    <h3 class="font-semibold text-xl mb-6 text-purple-800 flex items-center justify-center">
+                        <i class="fas fa-broom mr-3"></i>Hygiene & Sanitation
+                    </h3>
+                    <ul class="space-y-4">
+                        <li class="checklist-item flex items-center p-3 rounded-lg">
+                            <input type="checkbox" class="mr-4 text-purple-600 transform scale-125 transition-transform" id="sanitize-feet">
+                            <label for="sanitize-feet" class="text-gray-700 hover:text-purple-600 transition-colors">Footbath disinfectant for all visitors</label>
+                        </li>
+                        <li class="checklist-item flex items-center p-3 rounded-lg">
+                            <input type="checkbox" class="mr-4 text-purple-600 transform scale-125 transition-transform" id="clean-stalls">
+                            <label for="clean-stalls" class="text-gray-700 hover:text-purple-600 transition-colors">Regular stall & equipment cleaning</label>
+                        </li>
+                        <li class="checklist-item flex items-center p-3 rounded-lg">
+                            <input type="checkbox" class="mr-4 text-purple-600 transform scale-125 transition-transform" id="waste-disposal">
+                            <label for="waste-disposal" class="text-gray-700 hover:text-purple-600 transition-colors">Proper waste disposal protocols</label>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-red-50 to-red-100 p-8 rounded-2xl checklist hover:shadow-xl transition-shadow">
+                    <h3 class="font-semibold text-xl mb-6 text-red-800 flex items-center justify-center">
+                        <i class="fas fa-sign-in-alt mr-3"></i>Access Control
+                    </h3>
+                    <ul class="space-y-4">
+                        <li class="checklist-item flex items-center p-3 rounded-lg">
+                            <input type="checkbox" class="mr-4 text-red-600 transform scale-125 transition-transform" id="visitor-log">
+                            <label for="visitor-log" class="text-gray-700 hover:text-red-600 transition-colors">Visitor registration and monitoring</label>
+                        </li>
+                        <li class="checklist-item flex items-center p-3 rounded-lg">
+                            <input type="checkbox" class="mr-4 text-red-600 transform scale-125 transition-transform" id="fence-security">
+                            <label for="fence-security" class="text-gray-700 hover:text-red-600 transition-colors">Perimeter fencing and access gates</label>
+                        </li>
+                        <li class="checklist-item flex items-center p-3 rounded-lg">
+                            <input type="checkbox" class="mr-4 text-red-600 transform scale-125 transition-transform" id="personal-protective">
+                            <label for="personal-protective" class="text-gray-700 hover:text-red-600 transition-colors">PPE requirements for staff</label>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-2xl checklist hover:shadow-xl transition-shadow">
+                    <h3 class="font-semibold text-xl mb-6 text-green-800 flex items-center justify-center">
+                        <i class="fas fa-syringe mr-3"></i>Vaccination & Health
+                    </h3>
+                    <ul class="space-y-4">
+                        <li class="checklist-item flex items-center p-3 rounded-lg">
+                            <input type="checkbox" class="mr-4 text-green-600 transform scale-125 transition-transform" id="vaccination-schedule">
+                            <label for="vaccination-schedule" class="text-gray-700 hover:text-green-600 transition-colors">Current vaccination program adherence</label>
+                        </li>
+                        <li class="checklist-item flex items-center p-3 rounded-lg">
+                            <input type="checkbox" class="mr-4 text-green-600 transform scale-125 transition-transform" id="health-monitoring">
+                            <label for="health-monitoring" class="text-gray-700 hover:text-green-600 transition-colors">Daily health checks performed</label>
+                        </li>
+                        <li class="checklist-item flex items-center p-3 rounded-lg">
+                            <input type="checkbox" class="mr-4 text-green-600 transform scale-125 transition-transform" id="disease-surveillance">
+                            <label for="disease-surveillance" class="text-gray-700 hover:text-green-600 transition-colors">Disease surveillance system active</label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-10 p-8 bg-gray-50 rounded-2xl hover:shadow-lg transition-shadow">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/402e9290-d267-45bf-aeb4-8a2a5e2e7f98.png" alt="Step-by-step infographic illustrating biosecurity protocols from entry to equipment handling" class="w-full rounded-xl transform hover:scale-105 transition-transform shadow-lg">
+                <p class="mt-6 text-center text-gray-600 text-lg">Visual guide to implementing each protocol correctly for maximum protection.</p>
+            </div>
+        </section>
+
+        <!-- Health Monitoring Section -->
+        <section id="monitoring" class="section bg-white rounded-3xl p-10 mb-10 biosecurity-card">
+            <h2 class="text-4xl font-bold text-gray-800 mb-8 flex items-center justify-center">
+                <i class="fas fa-stethoscope text-teal-600 mr-4 animate-pulse"></i>Health Monitoring
+            </h2>
+            <p class="text-gray-600 mb-8 text-center text-lg max-w-3xl mx-auto">Track health records, vaccination history, and detect potential disease outbreaks early with our intelligent monitoring system.</p>
+            <div class="overflow-x-auto mb-8">
+                <table class="min-w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+                    <thead class="bg-gradient-to-r from-teal-400 to-teal-600 text-white">
+                        <tr>
+                            <th class="px-8 py-4 text-left text-sm font-semibold uppercase tracking-wide">Farm Type</th>
+                            <th class="px-8 py-4 text-left text-sm font-semibold uppercase tracking-wide">Last Vaccination</th>
+                            <th class="px-8 py-4 text-left text-sm font-semibold uppercase tracking-wide">Health Status</th>
+                            <th class="px-8 py-4 text-left text-sm font-semibold uppercase tracking-wide">Last Check</th>
+                            <th class="px-8 py-4 text-left text-sm font-semibold uppercase tracking-wide">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr class="hover:bg-gray-50 transition-colors cursor-pointer">
+                            <td class="px-8 py-6 flex items-center">
+                                <i class="fas fa-pig text-blue-600 mr-3 text-xl"></i>
+                                <span class="font-medium">Pig Farm A</span>
+                            </td>
+                            <td class="px-8 py-6">Jan 15, 2024</td>
+                            <td class="px-8 py-6">
+                                <span class="px-4 py-2 text-sm bg-green-100 text-green-800 rounded-full hover:scale-105 transition-transform animate-pulse">
+                                    <i class="fas fa-check mr-2"></i>Healthy
+                                </span>
+                            </td>
+                            <td class="px-8 py-6">Today at 9:00 AM</td>
+                            <td class="px-8 py-6">
+                                <button class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md button-3d">View Details</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 transition-colors cursor-pointer">
+                            <td class="px-8 py-6 flex items-center">
+                                <i class="fas fa-dove text-yellow-600 mr-3 text-xl"></i>
+                                <span class="font-medium">Poultry Farm B</span>
+                            </td>
+                            <td class="px-8 py-6">Jan 10, 2024</td>
+                            <td class="px-8 py-6">
+                                <span class="px-4 py-2 text-sm bg-yellow-100 text-yellow-800 rounded-full hover:scale-105 transition-transform">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>Observation
+                                </span>
+                            </td>
+                            <td class="px-8 py-6">Yesterday at 3:30 PM</td>
+                            <td class="px-8 py-6">
+                                <button class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md button-3d">View Details</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 transition-colors cursor-pointer">
+                            <td class="px-8 py-6 flex items-center">
+                                <i class="fas fa-pig text-green-600 mr-3 text-xl"></i>
+                                <span class="font-medium">Pig Farm C</span>
+                            </td>
+                            <td class="px-8 py-6">Jan 12, 2024</td>
+                            <td class="px-8 py-6">
+                                <span class="px-4 py-2 text-sm bg-red-100 text-red-800 rounded-full hover:scale-105 transition-transform animate-pulse">
+                                    <i class="fas fa-times mr-2"></i>Alert
+                                </span>
+                            </td>
+                            <td class="px-8 py-6">2 days ago</td>
+                            <td class="px-8 py-6">
+                                <button class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-all transform hover:scale-105 shadow-md button-3d">Urgency Action</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex flex-wrap gap-6 justify-center">
+                <button id="add-record" class="bg-green-600 text-white px-8 py-4 rounded-xl hover:bg-green-700 transition-all transform hover:scale-105 shadow-lg button-3d">
+                    <i class="fas fa-plus mr-3"></i>Add Health Record
+                </button>
+                <button id="generate-report" class="bg-indigo-600 text-white px-8 py-4 rounded-xl hover:bg-indigo-700 transition-all transform hover:scale-105 shadow-lg button-3d">
+                    <i class="fas fa-file-pdf mr-3"></i>Generate Report
+                </button>
+                <button id="export-data" class="bg-purple-600 text-white px-8 py-4 rounded-xl hover:bg-purple-700 transition-all transform hover:scale-105 shadow-lg button-3d">
+                    <i class="fas fa-download mr-3"></i>Export Data
+                </button>
+            </div>
+            <div class="mt-10">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/c4a9a57b-daf7-4d5a-82a6-b004d2bf7931.png" alt="Health monitoring dashboard with graphs showing vaccination trends and disease incidence rates" class="w-full rounded-2xl shadow-2xl transform hover:scale-105 transition-transform">
+            </div>
+        </section>
+
+        <!-- Training & Resources Section -->
+        <section id="resources" class="section bg-white rounded-3xl p-10 mb-10 biosecurity-card">
+            <h2 class="text-4xl font-bold text-gray-800 mb-8 flex items-center justify-center">
+                <i class="fas fa-graduation-cap text-orange-600 mr-4 animate-spin-slow"></i>Training & Resources
+            </h2>
+            <p class="text-gray-600 mb-8 text-center text-lg max-w-3xl mx-auto">Access comprehensive guides, videos, and tools to enhance your biosecurity knowledge and practices with interactive learning programs.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-2xl hover:shadow-2xl transition-all transform hover:scale-105 cursor-pointer">
+                    <h3 class="font-semibold text-lg mb-4 flex items-center justify-center">
+                        <i class="fas fa-book-open text-orange-600 mr-3"></i>Disease Prevention Guide
+                    </h3>
+                    <p class="text-gray-600 mb-4 text-center">Comprehensive guide for preventing common diseases.</p>
+                    <button class="bg-orange-600 text-white px-6 py-3 rounded-lg w-full hover:bg-orange-700 transition-all transform hover:scale-105 shadow-md button-3d">
+                        <i class="fas fa-download mr-2"></i>Download PDF
+                    </button>
+                </div>
+                <div class="bg-gradient-to-br from-pink-50 to-pink-100 p-6 rounded-2xl hover:shadow-2xl transition-all transform hover:scale-105 cursor-pointer">
+                    <h3 class="font-semibold text-lg mb-4 flex items-center justify-center">
+                        <i class="fas fa-video text-pink-600 mr-3"></i>Emergency Response Video
+                    </h3>
+                    <p class="text-gray-600 mb-4 text-center">Step-by-step video for disease outbreaks.</p>
+                    <button class="bg-pink-600 text-white px-6 py-3 rounded-lg w-full hover:bg-pink-700 transition-all transform hover:scale-105 shadow-md button-3d">
+                        <i class="fas fa-play mr-2"></i>Watch Now
+                    </button>
+                </div>
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl hover:shadow-2xl transition-all transform hover:scale-105 cursor-pointer">
+                    <h3 class="font-semibold text-lg mb-4 flex items-center justify-center">
+                        <i class="fas fa-check-circle text-blue-600 mr-3"></i>Compliance Checklists
+                    </h3>
+                    <p class="text-gray-600 mb-4 text-center">Printable checks for regular compliance.</p>
+                    <button class="bg-blue-600 text-white px-6 py-3 rounded-lg w-full hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md button-3d">
+                        <i class="fas fa-print mr-2"></i>Print Checklist
+                    </button>
+                </div>
+                <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl hover:shadow-2xl transition-all transform hover:scale-105 cursor-pointer">
+                    <h3 class="font-semibold text-lg mb-4 flex items-center justify-center">
+                        <i class="fas fa-users text-green-600 mr-3"></i>Staff Training Program
+                    </h3>
+                    <p class="text-gray-600 mb-4 text-center">Interactive staff training modules.</p>
+                    <button class="bg-green-600 text-white px-6 py-3 rounded-lg w-full hover:bg-green-700 transition-all transform hover:scale-105 shadow-md button-3d">
+                        <i class="fas fa-user-graduate mr-2"></i>Start Training
+                    </button>
+                </div>
+            </div>
+            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/6c5215e4-5e66-47e5-80a1-a4ebcbf70e0b.png" alt="Training center layout with modern computers, interactive screens, and educational materials for farm biosecurity training" class="w-full rounded-2xl shadow-2xl transform hover:scale-105 transition-transform">
+            <div class="mt-8 text-center">
+                <h4 class="text-2xl font-semibold mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Popular Features</h4>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm hover:scale-110 transition-transform cursor-pointer animate-bounce">Interactive Tutorials</span>
+                    <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm hover:scale-110 transition-transform cursor-pointer">Video Demonstrations</span>
+                    <span class="px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm hover:scale-110 transition-transform cursor-pointer">Quiz Assessments</span>
+                    <span class="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm hover:scale-110 transition-transform cursor-pointer">Certification Programs</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alerts Section -->
+        <section id="alerts" class="section bg-white rounded-3xl p-10 mb-10 biosecurity-card">
+            <h2 class="text-4xl font-bold text-gray-800 mb-8 flex items-center justify-center">
+                <i class="fas fa-bell text-red-600 mr-4 animate-bounce"></i>Biosecurity Alerts
+            </h2>
+            <p class="text-gray-600 mb-8 text-center text-lg max-w-3xl mx-auto">Stay informed about critical updates, reminders, and potential risks to your farm operations with real-time intelligent alerts.</p>
+            <div id="alerts-container" class="space-y-6">
+                <div class="alert-ribbon p-6 rounded-2xl flex items-start transform hover:scale-102 transition-all">
+                    <i class="fas fa-exclamation-triangle mr-4 mt-2 text-2xl"></i>
+                    <div>
+                        <h4 class="font-semibold text-xl mb-2">Critical Alert</h4>
+                        <p class="text-lg">Unusual mortality rates detected in Poultry Farm C. Immediate action recommended to prevent spread.</p>
+                        <span class="text-sm opacity-75 mt-2 inline-block">2 hours ago</span>
+                    </div>
+                </div>
+                <div class="alert-ribbon p-6 rounded-2xl flex items-start transform hover:scale-102 transition-all">
+                    <i class="fas fa-calendar-alt mr-4 mt-2 text-2xl"></i>
+                    <div>
+                        <h4 class="font-semibold text-xl mb-2">Scheduled Reminder</h4>
+                        <p class="text-lg">Biosecurity audit scheduled for next week. Please prepare all checklists and documentation.</p>
+                        <span class="text-sm opacity-75 mt-2 inline-block">1 day ago</span>
+                    </div>
+                </div>
+                <div class="alert-ribbon p-6 rounded-2xl flex items-start transform hover:scale-102 transition-all">
+                    <i class="fas fa-info-circle mr-4 mt-2 text-2xl"></i>
+                    <div>
+                        <h4 class="font-semibold text-xl mb-2">Information Update</h4>
+                        <p class="text-lg">New vaccination guidelines available. Update your protocols according to the latest recommendations.</p>
+                        <span class="text-sm opacity-75 mt-2 inline-block">3 days ago</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-6 justify-center mt-10">
+                <button id="create-alert" class="bg-blue-600 text-white px-8 py-4 rounded-xl hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg button-3d">
+                    <i class="fas fa-plus mr-3"></i>Create Custom Alert
+                </button>
+                <button id="clear-alerts" class="bg-gray-600 text-white px-8 py-4 rounded-xl hover:bg-gray-700 transition-all transform hover:scale-105 shadow-lg button-3d">
+                    <i class="fas fa-trash mr-3"></i>Clear All Alerts
+                </button>
+                <button id="filter-alerts" class="bg-green-600 text-white px-8 py-4 rounded-xl hover:bg-green-700 transition-all transform hover:scale-105 shadow-lg button-3d">
+                    <i class="fas fa-filter mr-3"></i>Filter Alerts
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gradient-to-r from-gray-800 to-gray-900 text-white text-center py-12 relative overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-20"></div>
+        <div class="relative z-10 container mx-auto px-4">
+            <p class="mb-4 text-xl">&copy; 2024 Digital Farm Management Portal. Empowering farms with advanced biosecurity solutions.</p>
+            <p class="text-lg opacity-75 max-w-4xl mx-auto">Developed for implementing comprehensive biosecurity measures in pig and poultry farming operations. Revolutionizing farm safety with cutting-edge technology.</p>
+            <div class="mt-8 flex flex-wrap justify-center gap-6">
+                <i class="fab fa-facebook text-3xl hover:text-blue-400 cursor-pointer transition-all transform hover:scale-125"></i>
+                <i class="fab fa-twitter text-3xl hover:text-blue-400 cursor-pointer transition-all transform hover:scale-125"></i>
+                <i class="fab fa-linkedin text-3xl hover:text-blue-400 cursor-pointer transition-all transform hover:scale-125"></i>
+                <i class="fab fa-instagram text-3xl hover:text-pink-400 cursor-pointer transition-all transform hover:scale-125"></i>
+                <i class="fas fa-envelope text-3xl hover:text-gray-400 cursor-pointer transition-all transform hover:scale-125"></i>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let Assistant = document.getElementById("assistant");
+        Assistant.addEventListener('click', function(){
+            window.location.href = 'finalcode45.html';
+        });
+
+        // Cursor glow effect
+        const cursorGlow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.pageX - 10 + 'px';
+            cursorGlow.style.top = e.pageY - 10 + 'px';
+        });
+
+        document.addEventListener('mouseenter', () => {
+            cursorGlow.style.opacity = '1';
+        });
+
+        document.addEventListener('mouseleave', () => {
+            cursorGlow.style.opacity = '0';
+        });
+
+        // Update biosecurity score dynamically when checkboxes are checked
+        function updateBiosecurityScore() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const total = checkboxes.length;
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const score = Math.round((checked / total) * 100);
+            document.getElementById('biosecurity-score').textContent = score + '%';
+        }
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateBiosecurityScore);
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Button interactions
+        document.getElementById('add-record').addEventListener('click', () => {
+            alert('🚀 Feature: Add new health record modal would open here. (Full backend integration coming soon!)');
+        });
+
+        document.getElementById('generate-report').addEventListener('click', () => {
+            alert('📊 Feature: Report generation would process farm data and create stunning PDF. (Full backend integration coming soon!)');
+        });
+
+        document.getElementById('export-data').addEventListener('click', () => {
+            alert('💾 Feature: Export farm data as CSV/Excel file. (Full backend integration coming soon!)');
+        });
+
+        document.getElementById('create-alert').addEventListener('click', () => {
+            alert('🏠 Feature: Custom alert creation form would appear. (Full backend integration coming soon!)');
+        });
+
+        document.getElementById('clear-alerts').addEventListener('click', () => {
+            alert('✨ All alerts have been cleared successfully!');
+            document.getElementById('alerts-container').innerHTML = '<div class="p-10 text-center text-gray-500"><i class="fas fa-check-circle text-green-500 text-6xl mb-4 animate-bounce"></i><p class="text-xl">🎉 All alerts processed and cleared.</p></div>';
+                    });
+
+
+
+
+
+
+
+
+        document.getElementById('filter-alerts').addEventListener('click', () => {
+            alert('🔍 Feature: Alert filtering options would appear. (Full backend integration coming soon!)');
+        });
+
+        // Create floating particles on cursor movement
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.97) {
+                createParticle(e.clientX, e.clientY);
+            }
+        });
+
+        function createParticle(x, y) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            document.body.appendChild(particle);
+            
+            const size = Math.random() * 10 + 5;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            
+            const animation = particle.animate([
+                { transform: 'translate(0, 0)', opacity: 1 },
+                { transform: `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px)`, opacity: 0 }
+            ], {
+                duration: Math.random() * 1000 + 500,
+                easing: 'cubic-bezier(0, .9, .57, 1)'
+            });
+            
+            animation.onfinish = () => particle.remove();
+        }
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.8s ease forwards';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Simulate live data updates
+        function updateLiveData() {
+            const pigCount = document.getElementById('pig-count');
+            const poultryCount = document.getElementById('poultry-count');
+            
+            // Random small fluctuations in counts
+            const pigChange = Math.floor(Math.random() * 3) - 1;
+            const poultryChange = Math.floor(Math.random() * 5) - 2;
+            
+            const newPigCount = Math.max(10, parseInt(pigCount.textContent) + pigChange);
+            const newPoultryCount = Math.max(12, parseInt(poultryCount.textContent) + poultryChange);
+            
+            pigCount.textContent = newPigCount;
+            poultryCount.textContent = newPoultryCount;
+            
+            // Update score based on checkboxes
+            updateBiosecurityScore();
+        }
+
+        // Update data every 30 seconds
+        setInterval(updateLiveData, 30000);
+
+        // Initialize with random data
+        document.addEventListener('DOMContentLoaded', () => {
+            // Randomize initial checkbox states
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = Math.random() > 0.5;
+            });
+            
+            // Set initial score
+            updateBiosecurityScore();
+            
+            // Add animation delays to sections for staggered appearance
+            document.querySelectorAll('.section').forEach((section, index) => {
+                section.style.animationDelay = `${index * 0.2}s`;
+            });
+        });
+    </script>
+</body>
+</html>

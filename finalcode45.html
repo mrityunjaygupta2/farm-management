@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Digital Farm Management Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      background: #f0f4fa;
+    }
+
+    .app-container {
+      display: flex;
+      height: 100vh;
+      max-width: 1200px;
+      margin: 1rem auto;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .sidebar {
+      width: 320px;
+      background: #ecf3fa;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      font-weight: 800;
+      font-size: 1.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2px;
+    }
+
+    .sidebar-subtitle {
+      color: #6b7280;
+      font-weight: 500;
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .lang-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 2rem;
+    }
+
+    .lang-button {
+      flex: 1;
+      padding: 0.5rem 0;
+      font-weight: 600;
+      text-align: center;
+      border-radius: 9999px;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      background: #d9e8fc;
+      color: #374151;
+    }
+
+    .lang-button.active {
+      background-color: #4caf50;
+      color: white;
+      border-color: #4caf50;
+    }
+
+    .sidebar-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: #3b82f6;
+      color: white;
+      border-radius: 10px;
+      padding: 0.85rem 1.4rem;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+
+    .sidebar-btn:hover {
+      background-color: #2563eb;
+    }
+
+    .chat-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f9fafb;
+      padding: 1.7rem 2rem;
+      position: relative;
+    }
+
+    .chat-header {
+      font-weight: 700;
+      font-size: 1.6rem;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+      color: #111827;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-messages {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+
+    .chat-message {
+      max-width: 75%;
+      margin-bottom: 1rem;
+      padding: 0.8rem 1rem;
+      border-radius: 18px;
+      line-height: 1.4;
+      font-size: 1rem;
+      word-wrap: break-word;
+    }
+
+    .bot-message {
+      background: #dbeafe;
+      color: #1e40af;
+      align-self: flex-start;
+      border-top-left-radius: 4px;
+    }
+
+    .user-message {
+      background: #4caf50;
+      color: white;
+      align-self: flex-end;
+      border-top-right-radius: 4px;
+    }
+
+    .chat-input-area {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chat-input-field {
+      flex-grow: 1;
+      border: 1px solid #d1d5db;
+      border-radius: 9999px;
+      padding: 0.7rem 1rem;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .icon-button {
+      width: 45px;
+      height: 45px;
+      background: #4caf50;
+      border-radius: 9999px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="app-container" id="dashboardPage">
+    <aside class="sidebar">
+      <div class="sidebar-header"><span class="leaf-icon">🚜</span>Digital Farm</div>
+      <div class="sidebar-subtitle">AI-Powered Farmer Advisory</div>
+      <nav class="lang-buttons">
+        <button type="button" class="lang-button active" data-lang="en">English</button>
+        <button type="button" class="lang-button" data-lang="hi">हिन्दी</button>
+        <button type="button" class="lang-button" data-lang="ta">தமிழ்</button>
+        <button type="button" class="lang-button" data-lang="te">తెలుగు</button>
+      </nav>
+      <button class="sidebar-btn">📊 Dashboard</button>
+      <button class="sidebar-btn">🧑‍🏫 Daily Advisory</button>
+      <button class="sidebar-btn">📸 Image Analysis</button>
+    </aside>
+
+    <main class="chat-container">
+      <header class="chat-header">
+        <span id="chatTitle">Farm Management - AI Assistant</span>
+        <button id="logoutBtn" class="icon-button" title="Logout">⏻</button>
+      </header>
+      <section class="chat-messages" id="chatMessages"></section>
+      <form id="chatForm" class="chat-input-area">
+        <input type="text" id="userInput" class="chat-input-field"
+          placeholder="Ask your question here..." autocomplete="off" required />
+        <button type="button" class="icon-button" id="micBtn">🎤</button>
+        <button type="submit" class="icon-button">📨</button>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    const logoutBtn = document.getElementById("logoutBtn");
+    const chatMessages = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    const userInput = document.getElementById('userInput');
+    const micBtn = document.getElementById('micBtn');
+    const langButtons = document.querySelectorAll('.lang-button');
+    let currentLang = 'en';
+
+    const chatTranslations = {
+      en: { assistantName: "Farm Management", greeting: "Hello! I am your AI assistant. How can I help you today?", placeholder: "Ask your question here..." },
+      hi: { assistantName: "कृषि प्रबंधन", greeting: "नमस्ते! मैं आपका एआई सहायक हूं। मैं आपकी कैसे मदद कर सकता हूं?", placeholder: "अपना प्रश्न यहाँ पूछें..." },
+      ta: { assistantName: "கிரிஷி-மித்ரா", greeting: "வணக்கம்! நான் உங்கள் ஏ.ஐ உதவியாளர். நான் எப்படி உதவலாம்?", placeholder: "உங்கள் கேள்வியை இங்கே கேளுங்கள்..." },
+      te: { assistantName: "వ్యవసాయ నిర్వహణ", greeting: "హలో! నేను మీ AI సహాయకుడిని. నేను ఎలా సహాయం చేయగలను?", placeholder: "మీ ప్రశ్నను ఇక్కడ అడగండి..." }
+    };
+
+    const aiResponses = [
+      { keywords: ['hello', 'hi', 'hey'], response_en: 'Hello! How can I help you with your farm today?' },
+      { keywords: ['biosecurity'], response_en: 'Biosecurity means keeping your farm safe from diseases.' },
+      { keywords: ['vaccination'], response_en: 'Vaccination protects your animals. Follow schedule strictly.' },
+      { keywords: ['cleaning'], response_en: 'Regular cleaning and disinfecting reduces risk of disease.' },
+      { keywords: ['disease', 'sick'], response_en: 'If animals are sick, isolate them and call a vet.' },
+      { keywords: ['visitor'], response_en: 'Visitors should register and use footbaths for safety.' },
+      { keywords: ['thank'], response_en: "You're welcome! Happy to help." }
+    ];
+
+    function addMessage(text, sender = 'bot') {
+      const msg = document.createElement("div");
+      msg.classList.add("chat-message", sender === "user" ? "user-message" : "bot-message");
+      msg.textContent = text;
+      chatMessages.appendChild(msg);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function getAIResponse(input) {
+      const inputLC = input.toLowerCase();
+      for (const item of aiResponses) {
+        for (const keyword of item.keywords) {
+          if (inputLC.includes(keyword)) {
+            return item.response_en;
+          }
+        }
+      }
+      return "I'm here to help with your farm management. Could you rephrase your question?";
+    }
+
+    function initChat() {
+      chatMessages.innerHTML = "";
+      addMessage(chatTranslations[currentLang].greeting);
+      userInput.placeholder = chatTranslations[currentLang].placeholder;
+      document.getElementById('chatTitle').textContent = chatTranslations[currentLang].assistantName + " - AI Assistant";
+    }
+
+    chatForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const text = userInput.value.trim();
+      if (!text) return;
+      addMessage(text, 'user');
+      userInput.value = "";
+      setTimeout(() => {
+        addMessage(getAIResponse(text));
+      }, 700);
+    });
+
+    langButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        if (button.classList.contains('active')) return;
+        langButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        currentLang = button.getAttribute('data-lang');
+        initChat();
+      });
+    });
+
+    micBtn.addEventListener('click', () => {
+      if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        alert('Speech recognition not supported.');
+        return;
+      }
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = currentLang === 'hi' ? 'hi-IN' : currentLang === 'ta' ? 'ta-IN' : currentLang === 'te' ? 'te-IN' : 'en-US';
+      recognition.start();
+      micBtn.disabled = true;
+      micBtn.textContent = '🎙';
+      recognition.onresult = (e) => {
+        userInput.value = e.results[0][0].transcript;
+      };
+      recognition.onspeechend = () => {
+        recognition.stop();
+        micBtn.disabled = false;
+        micBtn.textContent = '🎤';
+      };
+      recognition.onerror = () => {
+        micBtn.disabled = false;
+        micBtn.textContent = '🎤';
+      };
+    });
+
+    // Initialize chat immediately
+    initChat();
+  </script>
+</body>
+
+</html>
